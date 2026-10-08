@@ -1,0 +1,56 @@
+name: publish
+
+# Publishes this package through npm's OIDC trusted publishing: no long-lived token
+# is stored anywhere, and no bypass-2FA token is needed (npm is restricting those
+# for direct publishing). Configure the trusted publisher once on npmjs.com:
+#
+#   Package → Settings → Trusted Publisher → GitHub Actions
+#     Organization or user: deepseekv41flash
+#     Repository:            dsh-remote-trust
+#     Workflow filename:     publish.yml
+#     Environment:           (leave empty)
+#
+# Then either push a v* tag or run this workflow manually.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write # required for OIDC trusted publishing (and provenance)
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # Trusted publishing needs npm >= 11.5.1; the runner image may lag behind.
+      - name: Use the latest npm
+        run: npm install -g npm@latest && npm --version
+
+      - name: Run the test suite
+        run: npm test
+
+      - name: Skip when this version is already published
+        id: check
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "dsh-remote-trust@$VERSION" version >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "dsh-remote-trust@$VERSION is already on the registry — nothing to do."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish
+        if: steps.check.outputs.publish == 'true'
+        run: npm publish --access public --provenance
