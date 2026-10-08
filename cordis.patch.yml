@@ -1,0 +1,4 @@
+# dsh-remote-trust bundle patch: inserts the index-tap plugin.
+- insert:
+    - id: dsh-remote-trust
+      name: "dsh-remote-trust"

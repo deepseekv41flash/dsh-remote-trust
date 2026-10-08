@@ -1,0 +1,58 @@
+{
+  "name": "dsh-remote-trust",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin: makes a reverse-proxied (non-loopback) dsh web page count as a trusted host, so the Settings surface loads instead of reporting \"settings are unavailable in this browser\".",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "settings",
+    "loopback",
+    "remote-access",
+    "reverse-proxy",
+    "nginx",
+    "web"
+  ],
+  "license": "MIT",
+  "author": "deepseekv41flash<monkey321478965@outlook.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepseekv41flash/dsh-remote-trust.git"
+  },
+  "homepage": "https://github.com/deepseekv41flash/dsh-remote-trust#readme",
+  "bugs": {
+    "url": "https://github.com/deepseekv41flash/dsh-remote-trust/issues"
+  },
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "scripts",
+    "test",
+    "cordis.patch.yml",
+    "README.md",
+    "README-en.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "build": "bash scripts/build.sh",
+    "check": "node --input-type=module -e \"await import('./lib/index.js')\""
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
